@@ -1,4 +1,4 @@
-module github.com/roadrunner-server/prometheus/v5
+module github.com/roadrunner-plugins/http-metrics/v5
 
 go 1.24
 

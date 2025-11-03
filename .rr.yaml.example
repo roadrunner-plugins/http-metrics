@@ -1,0 +1,83 @@
+# Enhanced HTTP Metrics Configuration Example
+
+# HTTP server configuration
+http:
+  address: 127.0.0.1:8080
+  max_request_size: 256
+  pool:
+    num_workers: 10
+    max_jobs: 100
+
+# Enhanced HTTP metrics configuration
+http_metrics:
+  # Enable enhanced metrics collection (default: true)
+  enabled: true
+  
+  # Endpoint pattern matching - groups similar URLs to prevent cardinality explosion
+  endpoint_patterns:
+    # Enable endpoint grouping (default: true)
+    enabled: true
+    
+    # Maximum number of unique endpoint patterns (default: 100)
+    # Protects against cardinality explosion
+    max_patterns: 100
+    
+    # LRU cache size for pattern matching results (default: 10000)
+    # Improves performance by caching regex matching results
+    cache_size: 10000
+    
+    # Pattern matching rules
+    # Each rule maps URL patterns to a common label
+    rules:
+      # API resources with IDs
+      - pattern: "^/api/users/[0-9]+$"
+        name: "/api/users/:id"
+      
+      - pattern: "^/api/users/[0-9]+/posts/[0-9]+$"
+        name: "/api/users/:id/posts/:id"
+      
+      - pattern: "^/api/orders/[0-9]+$"
+        name: "/api/orders/:id"
+      
+      - pattern: "^/api/products/[0-9]+$"
+        name: "/api/products/:id"
+      
+      # API with UUIDs
+      - pattern: "^/api/sessions/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+        name: "/api/sessions/:uuid"
+      
+      # Static assets
+      - pattern: "^/static/.*\\.(css|js|png|jpg|gif|svg)$"
+        name: "/static/:file"
+      
+      # Admin panel
+      - pattern: "^/admin/.*"
+        name: "/admin/:path"
+  
+  # Request/Response body size tracking (default: true)
+  # Helps identify bandwidth bottlenecks and payload optimization opportunities
+  collect_sizes: true
+  
+  # Queue time vs processing time breakdown (default: true)
+  # Critical for identifying worker pool saturation vs slow application logic
+  collect_queue_time: true
+  
+  # Worker pool health metrics (default: false)
+  # Note: Currently requires HTTP plugin integration - coming soon
+  collect_worker_info: false
+  
+  # Histogram buckets for duration metrics (in seconds)
+  # Customize based on your application's typical response times
+  duration_buckets: [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1.0, 5.0, 10.0]
+  
+  # Histogram buckets for size metrics (in bytes)
+  # Customize based on your application's typical payload sizes
+  size_buckets: [1024, 10240, 102400, 1048576, 10485760]  # 1KB, 10KB, 100KB, 1MB, 10MB
+
+# Metrics server configuration
+server:
+  command: "php worker.php"
+  
+# Prometheus metrics endpoint
+metrics:
+  address: 127.0.0.1:2112

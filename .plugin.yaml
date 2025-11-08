@@ -1,0 +1,10 @@
+name: http-metrics
+description: 'HTTP metrics plugin for RoadRunner'
+category: monitoring
+dependencies:
+  - http
+owner: butschster
+author:
+  name: Pavel Buchnev
+  email: butschster@gmail.com
+license: MIT

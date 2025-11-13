@@ -3,6 +3,7 @@ description: 'HTTP metrics plugin for RoadRunner'
 category: monitoring
 dependencies:
   - http
+  - metrics
 owner: butschster
 author:
   name: Pavel Buchnev
